@@ -16,12 +16,20 @@ async function run() {
     try {
         await client.connect();
         const toolsCollection = client.db('tools-manufacturer').collection('tools');
+        const reviewsCollection = client.db('tools-manufacturer').collection('reviews');
         
-        // all tools api
+        // get all tools
         app.get('/tools', async(req, res) => {
             const result = await toolsCollection.find({}).toArray();
             res.send(result);
-        })
+        });
+
+        // get all reviews
+        app.get('/reviews', async (req, res) => {
+            const result = await reviewsCollection.find({}).toArray();
+            res.send(result);
+        });
+
     }
     finally { }
 };
@@ -35,6 +43,3 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
 });
-
-// toolAdmin
-// QEDBtsyMTxUXhcJ8
