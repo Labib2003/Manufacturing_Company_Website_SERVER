@@ -35,6 +35,7 @@ async function run() {
         const toolsCollection = client.db('tools-manufacturer').collection('tools');
         const reviewsCollection = client.db('tools-manufacturer').collection('reviews');
         const userCollection = client.db('tools-manufacturer').collection('users');
+        const orderCollection = client.db('tools-manufacturer').collection('orders');
 
         // get all tools
         app.get('/tools', async (req, res) => {
@@ -49,9 +50,31 @@ async function run() {
             res.send(result);
         });
 
+        // decrease quantity when ordered
+        app.put('/tools/:id', async (req, res) => {
+            const id = req.params.id;
+            const body = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updatedQuantity = {
+                $set: {
+                    available_quantity: body.available_quantity
+                },
+            };
+            const result = await toolsCollection.updateOne(filter, updatedQuantity, options);
+            res.send(result);
+        });
+
         // get all reviews
         app.get('/reviews', verifyJWT, async (req, res) => {
             const result = await reviewsCollection.find({}).toArray();
+            res.send(result);
+        });
+
+        // post order
+        app.post('/order', async (req, res) => {
+            const order = req.body;
+            const result = await orderCollection.insertOne(order);
             res.send(result);
         });
 
