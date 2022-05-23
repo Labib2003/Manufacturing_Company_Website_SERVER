@@ -81,12 +81,16 @@ async function run() {
         // get order by email
         app.get('/orders/:email', verifyJWT, async (req, res) => {
             const email = req.params.email;
-            const result = await orderCollection.find({email: email}).toArray();
+            const result = await orderCollection.find({ email: email }).toArray();
             res.send(result);
         });
 
         // delete order
-        
+        app.delete('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const result = await orderCollection.deleteOne({ _id: ObjectId(id) });
+            res.send(result);
+        })
 
         // user
         app.put('/users/:email', async (req, res) => {
