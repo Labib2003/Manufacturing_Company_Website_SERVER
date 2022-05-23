@@ -78,6 +78,16 @@ async function run() {
             res.send(result);
         });
 
+        // get order by email
+        app.get('/orders/:email', verifyJWT, async (req, res) => {
+            const email = req.params.email;
+            const result = await orderCollection.find({email: email}).toArray();
+            res.send(result);
+        });
+
+        // delete order
+        
+
         // user
         app.put('/users/:email', async (req, res) => {
             const email = req.params.email;
