@@ -5,6 +5,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 app.use(cors());
 app.use(express.json());
@@ -71,6 +72,13 @@ async function run() {
             res.send(result);
         });
 
+        // post review
+        app.post('/reviews', verifyJWT, async (req, res) => {
+            const review = req.body;
+            const result = await reviewsCollection.insertOne(review);
+            res.send(result);
+        })
+
         // post order
         app.post('/order', verifyJWT, async (req, res) => {
             const order = req.body;
@@ -85,12 +93,34 @@ async function run() {
             res.send(result);
         });
 
+        // get order by id
+        app.get('/order/:id', verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            const result = await orderCollection.findOne({ _id: ObjectId(id) });
+            res.send(result);
+        });
+
+        // update payment status
+        app.put('/order/:id', verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            const payment = req.body;
+            const filter = { _id: ObjectId(id) };
+            const updatedDoc = {
+                $set: {
+                    paid: true,
+                    transactionId: payment.transactionId
+                }
+            }
+            const updatedOrder = await orderCollection.updateOne(filter, updatedDoc);
+            res.send(updatedOrder);
+        })
+
         // delete order
         app.delete('/orders/:id', verifyJWT, async (req, res) => {
             const id = req.params.id;
             const result = await orderCollection.deleteOne({ _id: ObjectId(id) });
             res.send(result);
-        })
+        });
 
         // user
         app.put('/users/:email', async (req, res) => {
@@ -104,6 +134,20 @@ async function run() {
             const result = await userCollection.updateOne(filter, updateDoc, options);
             const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET);
             res.send({ result, token });
+        });
+
+        // stripe payment intent
+        app.post("/create-payment-intent", verifyJWT, async (req, res) => {
+            const { price } = req.body;
+            const amount = price * 100;
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: amount,
+                currency: "usd",
+                payment_method_types: ['card'],
+            });
+            res.send({
+                clientSecret: paymentIntent.client_secret,
+            });
         });
     }
     finally { }
