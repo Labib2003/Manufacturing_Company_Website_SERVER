@@ -46,7 +46,7 @@ async function run() {
                 next();
             }
             else {
-                res.status(403).send({ message: 'forbidden' });
+                res.status(403).send({ message: 'Forbidden access' });
             }
         }
 
@@ -59,14 +59,14 @@ async function run() {
         });
 
         // get a specific tool by id
-        app.get('/tools/:id', async (req, res) => {
+        app.get('/tool/:id', async (req, res) => {
             const id = req.params.id;
             const result = await toolsCollection.findOne({ _id: ObjectId(id) });
             res.send(result);
         });
 
         // decrease quantity when ordered
-        app.put('/tools/:id', async (req, res) => {
+        app.put('/tool/:id', async (req, res) => {
             const id = req.params.id;
             const body = req.body;
             const filter = { _id: ObjectId(id) };
@@ -90,7 +90,7 @@ async function run() {
         // delete tool api
         app.delete('/tool/:id', verifyJWT, verifyAdmin, async (req, res) => {
             const id = req.params.id;
-            const result = await toolsCollection.deleteOne({_id: ObjectId(id)});
+            const result = await toolsCollection.deleteOne({ _id: ObjectId(id) });
             res.send(result);
         })
 
@@ -152,7 +152,7 @@ async function run() {
         });
 
         // delete order
-        app.delete('/orders/:id', verifyJWT, async (req, res) => {
+        app.delete('/order/:id', verifyJWT, async (req, res) => {
             const id = req.params.id;
             const result = await orderCollection.deleteOne({ _id: ObjectId(id) });
             res.send(result);
@@ -165,7 +165,7 @@ async function run() {
         });
 
         // update shipment status
-        app.put('/allOrders/:id', verifyJWT, verifyAdmin, async (req, res) => {
+        app.put('/order/ship/:id', verifyJWT, verifyAdmin, async (req, res) => {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) };
             const updatedDoc = {
@@ -182,7 +182,7 @@ async function run() {
         /* ---------- USER RELATED APIs START ---------- */
 
         // upsert user
-        app.put('/users/:email', async (req, res) => {
+        app.put('/user/:email', async (req, res) => {
             const email = req.params.email;
             const user = req.body;
             const filter = { email: email };
@@ -196,7 +196,7 @@ async function run() {
         });
 
         // get user by email
-        app.get('/users/:email', verifyJWT, async (req, res) => {
+        app.get('/user/:email', verifyJWT, async (req, res) => {
             const email = req.params.email;
             const result = await userCollection.findOne({ email: email });
             res.send(result);
@@ -209,7 +209,7 @@ async function run() {
         });
 
         // make admin
-        app.put('/users/admin/:email', verifyJWT, verifyAdmin, async (req, res) => {
+        app.put('/user/admin/:email', verifyJWT, verifyAdmin, async (req, res) => {
             const user = req.body.user;
             console.log(req.body);
             const filter = { email: user };
