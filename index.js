@@ -80,6 +80,13 @@ async function run() {
             res.send(result);
         });
 
+        // add new tool
+        app.post('/tools', verifyJWT, verifyAdmin, async (req, res) => {
+            const newTool = req.body;
+            const result = await toolsCollection.insertOne(newTool);
+            res.send(result);
+        })
+
         /* ---------- TOOLS RELATED APIs END ---------- */
 
         /* ---------- REVIEWS RELATED APIs START ---------- */
