@@ -85,6 +85,13 @@ async function run() {
             const newTool = req.body;
             const result = await toolsCollection.insertOne(newTool);
             res.send(result);
+        });
+
+        // delete tool api
+        app.delete('/tool/:id', verifyJWT, verifyAdmin, async (req, res) => {
+            const id = req.params.id;
+            const result = await toolsCollection.deleteOne({_id: ObjectId(id)});
+            res.send(result);
         })
 
         /* ---------- TOOLS RELATED APIs END ---------- */
@@ -193,7 +200,27 @@ async function run() {
             const email = req.params.email;
             const result = await userCollection.findOne({ email: email });
             res.send(result);
-        })
+        });
+
+        // get all users
+        app.get('/users', verifyJWT, verifyAdmin, async (req, res) => {
+            const result = await userCollection.find({}).toArray();
+            res.send(result);
+        });
+
+        // make admin
+        app.put('/users/admin/:email', verifyJWT, verifyAdmin, async (req, res) => {
+            const user = req.body.user;
+            console.log(req.body);
+            const filter = { email: user };
+            const updateDoc = {
+                $set: {
+                    admin: true
+                },
+            };
+            const result = await userCollection.updateOne(filter, updateDoc);
+            res.send(result);
+        });
 
         /* ---------- USER RELATED APIs END ---------- */
 
