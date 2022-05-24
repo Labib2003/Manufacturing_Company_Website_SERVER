@@ -151,7 +151,7 @@ async function run() {
         });
 
         // update shipment status
-        app.put('/orders/:id', verifyJWT, verifyAdmin, async (req, res) => {
+        app.put('/allOrders/:id', verifyJWT, verifyAdmin, async (req, res) => {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) };
             const updatedDoc = {
