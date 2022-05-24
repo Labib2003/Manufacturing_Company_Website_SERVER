@@ -15,7 +15,7 @@ function verifyJWT(req, res, next) {
     // bearer... token
     const authHeader = req.headers.authorization;
     if (!authHeader) {
-        return res.status(401).send({ message: 'UnAuthorized access' });
+        return res.status(401).send({ message: 'Unauthorized access' });
     };
     const token = authHeader.split(' ')[1];
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
@@ -37,7 +37,19 @@ async function run() {
         const reviewsCollection = client.db('tools-manufacturer').collection('reviews');
         const userCollection = client.db('tools-manufacturer').collection('users');
         const orderCollection = client.db('tools-manufacturer').collection('orders');
-        
+
+        async function verifyAdmin(req, res, next) {
+            const requester = req.decoded.email;
+            // checking if the requester is an admin or not
+            const requesterAccount = await userCollection.findOne({ email: requester });
+            if (requesterAccount?.admin) {
+                next();
+            }
+            else {
+                res.status(403).send({ message: 'forbidden' });
+            }
+        }
+
         /* ---------- TOOLS RELATED APIs START ---------- */
 
         // get all tools
@@ -73,7 +85,7 @@ async function run() {
         /* ---------- REVIEWS RELATED APIs START ---------- */
 
         // get all reviews
-        app.get('/reviews', verifyJWT, async (req, res) => {
+        app.get('/reviews', async (req, res) => {
             const result = await reviewsCollection.find({}).toArray();
             res.send(result);
         });
@@ -132,12 +144,31 @@ async function run() {
             res.send(result);
         });
 
+        // get all orders
+        app.get('/orders', verifyJWT, verifyAdmin, async (req, res) => {
+            const result = await orderCollection.find({}).toArray();
+            res.send(result);
+        });
+
+        // update shipment status
+        app.put('/orders/:id', verifyJWT, verifyAdmin, async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const updatedDoc = {
+                $set: {
+                    shipped: true
+                }
+            }
+            const updatedOrder = await orderCollection.updateOne(filter, updatedDoc);
+            res.send(updatedOrder);
+        })
+
         /* ---------- ORDERS RELATED APIs END ---------- */
 
         /* ---------- USER RELATED APIs START ---------- */
 
-        // user
-        app.put('/users/:email', verifyJWT, async (req, res) => {
+        // upsert user
+        app.put('/users/:email', async (req, res) => {
             const email = req.params.email;
             const user = req.body;
             const filter = { email: email };
@@ -149,6 +180,13 @@ async function run() {
             const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET);
             res.send({ result, token });
         });
+
+        // get user by email
+        app.get('/users/:email', verifyJWT, async (req, res) => {
+            const email = req.params.email;
+            const result = await userCollection.findOne({ email: email });
+            res.send(result);
+        })
 
         /* ---------- USER RELATED APIs END ---------- */
 
