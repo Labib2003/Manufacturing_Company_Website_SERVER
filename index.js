@@ -37,6 +37,8 @@ async function run() {
         const reviewsCollection = client.db('tools-manufacturer').collection('reviews');
         const userCollection = client.db('tools-manufacturer').collection('users');
         const orderCollection = client.db('tools-manufacturer').collection('orders');
+        
+        /* ---------- TOOLS RELATED APIs START ---------- */
 
         // get all tools
         app.get('/tools', async (req, res) => {
@@ -66,6 +68,10 @@ async function run() {
             res.send(result);
         });
 
+        /* ---------- TOOLS RELATED APIs END ---------- */
+
+        /* ---------- REVIEWS RELATED APIs START ---------- */
+
         // get all reviews
         app.get('/reviews', verifyJWT, async (req, res) => {
             const result = await reviewsCollection.find({}).toArray();
@@ -77,7 +83,11 @@ async function run() {
             const review = req.body;
             const result = await reviewsCollection.insertOne(review);
             res.send(result);
-        })
+        });
+
+        /* ---------- REVIEWS RELATED APIs END ---------- */
+
+        /* ---------- ORDERS RELATED APIs START ---------- */
 
         // post order
         app.post('/order', verifyJWT, async (req, res) => {
@@ -113,7 +123,7 @@ async function run() {
             }
             const updatedOrder = await orderCollection.updateOne(filter, updatedDoc);
             res.send(updatedOrder);
-        })
+        });
 
         // delete order
         app.delete('/orders/:id', verifyJWT, async (req, res) => {
@@ -122,8 +132,12 @@ async function run() {
             res.send(result);
         });
 
+        /* ---------- ORDERS RELATED APIs END ---------- */
+
+        /* ---------- USER RELATED APIs START ---------- */
+
         // user
-        app.put('/users/:email', async (req, res) => {
+        app.put('/users/:email', verifyJWT, async (req, res) => {
             const email = req.params.email;
             const user = req.body;
             const filter = { email: email };
@@ -135,6 +149,10 @@ async function run() {
             const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET);
             res.send({ result, token });
         });
+
+        /* ---------- USER RELATED APIs END ---------- */
+
+        /* ---------- STRIPE RELATED APIs START ---------- */
 
         // stripe payment intent
         app.post("/create-payment-intent", verifyJWT, async (req, res) => {
@@ -149,6 +167,8 @@ async function run() {
                 clientSecret: paymentIntent.client_secret,
             });
         });
+
+        /* ---------- STRIPE RELATED APIs END ---------- */
     }
     finally { }
 };
