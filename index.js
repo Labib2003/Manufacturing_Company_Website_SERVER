@@ -72,7 +72,7 @@ async function run() {
         });
 
         // post order
-        app.post('/order', async (req, res) => {
+        app.post('/order', verifyJWT, async (req, res) => {
             const order = req.body;
             const result = await orderCollection.insertOne(order);
             res.send(result);
@@ -86,7 +86,7 @@ async function run() {
         });
 
         // delete order
-        app.delete('/orders/:id', async (req, res) => {
+        app.delete('/orders/:id', verifyJWT, async (req, res) => {
             const id = req.params.id;
             const result = await orderCollection.deleteOne({ _id: ObjectId(id) });
             res.send(result);
