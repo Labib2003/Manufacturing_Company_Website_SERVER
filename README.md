@@ -52,4 +52,4 @@ This is a site made for an imaginary company called IronWorks who manufacturers 
 
 ## Random fact about this project 🙂:
 
-I completely rebuilt the backend with Mongoose and followed the MVC pattern after finishing the main course.
+I completely rebuilt the backend with Mongoose and followed the MVC pattern after learning about them.
