@@ -5,7 +5,7 @@ This project is the `server side` code of the last assignment of the [Programmin
 ## Relevant Links
 
 - [Live Demo](https://iron-works-ae87a.web.app/)
-- [Client Side Code](https://github.com/Labib2003/IronWorks-a_manufacturing_company_website-CLIENT)
+- [Client Side Code](https://github.com/Labib2003/Manufacturing_Company_Website_CLIENT)
 
 ## Description
 
