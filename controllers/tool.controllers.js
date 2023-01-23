@@ -53,14 +53,9 @@ module.exports.postNewTool = async (req, res) => {
 };
 module.exports.updateTool = async (req, res) => {
   try {
+    console.log(req.params.id, req.body);
     const response = await updateToolService(req.params.id, req.body);
-
-    if (!response.modifiedCount) {
-      res.status(500).json({
-        success: false,
-        message: "Could not find a product with the provided id",
-      });
-    }
+    console.log(response);
     res.status(200).json({
       success: true,
       data: response,
