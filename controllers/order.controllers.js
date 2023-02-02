@@ -6,6 +6,7 @@ const {
   deleteOrderService,
   getOrderByIdService,
   updatePaymentStatusService,
+  updateShippingStatusService,
 } = require("../services/order.services");
 
 module.exports.getAllOrders = async (req, res) => {
@@ -131,7 +132,7 @@ module.exports.createPaymentIntent = async (req, res) => {
 };
 module.exports.updateShippingStatus = async (req, res) => {
   try {
-    const response = await updatePaymentStatusService(req.params.id);
+    const response = await updateShippingStatusService(req.params.id);
     res.status(200).json({
       success: true,
       data: response,
