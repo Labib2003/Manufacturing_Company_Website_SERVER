@@ -129,3 +129,17 @@ module.exports.createPaymentIntent = async (req, res) => {
     });
   }
 };
+module.exports.updateShippingStatus = async (req, res) => {
+  try {
+    const response = await updatePaymentStatusService(req.params.id);
+    res.status(200).json({
+      success: true,
+      data: response,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      data: error.message,
+    });
+  }
+};

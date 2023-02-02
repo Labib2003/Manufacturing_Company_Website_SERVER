@@ -8,3 +8,5 @@ module.exports.placeNewOrderService = (data) => new Order(data).save();
 module.exports.updatePaymentStatusService = (id, data) =>
   Order.findByIdAndUpdate(id, data);
 module.exports.deleteOrderService = (id) => Order.deleteOne({ _id: id });
+module.exports.updateShippingStatusService = (id) =>
+  Order.findByIdAndUpdate(id, { shipped: true });

@@ -37,6 +37,10 @@ const orderSchema = mongoose.Schema(
       type: String,
       default: "",
     },
+    shipped: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     collection: "orders",
