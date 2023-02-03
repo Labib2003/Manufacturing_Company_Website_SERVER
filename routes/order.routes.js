@@ -17,7 +17,7 @@ const router = express.Router();
 router.route("/").get(verifyJWT, getAllOrders).post(verifyJWT, placeNewOrder);
 router.route("/create-payment-intent").post(verifyJWT, createPaymentIntent);
 router.route("/byEmail/:email").get(verifyJWT, getOrdersByEmail);
-router.route("/ship/:id").patch(updateShippingStatus);
+router.route("/ship/:id").patch(verifyJWT, verifyAdmin, updateShippingStatus);
 router
   .route("/:id")
   .get(getOrderById)
