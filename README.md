@@ -36,7 +36,8 @@ This is a site made for an imaginary company called IronWorks who manufacturers 
 - Firebase (For authentication)
 - React Firebase Hooks
 - Stripe (Payment Gateway)
-- DaisyUI
+- Material UI
+- Material Icons
 - TailwindCSS
 
 ### Server Side:
